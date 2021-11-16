@@ -80,7 +80,7 @@ public class NetworkedClient : MonoBehaviour
             hostID = NetworkTransport.AddHost(topology, 0);
             Debug.Log("Socket open.  Host ID = " + hostID);
 
-            connectionID = NetworkTransport.Connect(hostID, "10.0.0.218", socketPort, 0, out error); // server is local on networka
+            connectionID = NetworkTransport.Connect(hostID, "127.0.0.1", socketPort, 0, out error); // server is local on networka
 
             if (error == 0)
             {
@@ -143,7 +143,7 @@ public static class ClientToServerSignifiers
 {
     public const int createAccount = 1;
 
-    public const int login = 1;
+    public const int login = 2;
 }
 
 public static class ServerToClientSignifiers

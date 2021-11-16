@@ -59,16 +59,16 @@ public class GameSystemManager : MonoBehaviour
 
         networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(msg);
 
-        networkedClient.GetComponent<NetworkedClient>().SendMessage(msg);
+        //networkedClient.GetComponent<NetworkedClient>().SendMessage(msg);
     }
 
     public void LoginToggleChanged(bool newVal)
     {
-        loginToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
+        createToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
     }
 
     public void CreateToggleChanged(bool newVal)
     {
-        createToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
+        loginToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
     }
 }
