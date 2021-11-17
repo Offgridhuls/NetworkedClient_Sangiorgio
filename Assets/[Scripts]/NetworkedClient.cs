@@ -7,13 +7,13 @@ using UnityEngine.Networking;
 public class NetworkedClient : MonoBehaviour
 {
 
-    int connectionID;
-    int maxConnections = 1000;
-    int reliableChannelID;
-    int unreliableChannelID;
-    int hostID;
-    int socketPort = 5491;
-    byte error;
+    static int connectionID;
+    static int maxConnections = 1000;
+    static int reliableChannelID;
+    static int unreliableChannelID;
+    static int hostID;
+    static int socketPort = 5491;
+    static byte error;
     bool isConnected = false;
     int ourClientID;
 
@@ -97,15 +97,20 @@ public class NetworkedClient : MonoBehaviour
         NetworkTransport.Disconnect(hostID, connectionID, out error);
     }
     
-    public void SendMessageToHost(string msg)
+    public static void SendMessageToHost(string msg)
     {
+
         byte[] buffer = Encoding.Unicode.GetBytes(msg);
+
         NetworkTransport.Send(hostID, connectionID, reliableChannelID, buffer, msg.Length * sizeof(char), out error);
+
     }
 
     private void ProcessRecievedMsg(string msg, int id)
     {
+
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
+
         string[] csv = msg.Split(',');
 
         int signifier = int.Parse(csv[0]);
@@ -115,9 +120,60 @@ public class NetworkedClient : MonoBehaviour
         {
 
         }
-        else if (signifier == ClientToServerSignifiers.createAccount)
+        if (signifier == ServerToClientSignifiers.waiting)
         {
+            GameSystemManager.SetPanelActive(true);
 
+            if (int.TryParse(csv[1], out int result))
+            {
+                if (result == 0)
+                {
+                    GameSystemManager.SetStatusLabel("Spectating");
+                }
+                else
+                {
+                    GameSystemManager.SetStatusLabel("Waiting");
+                }
+            }
+        }
+        else if (signifier == ServerToClientSignifiers.playTurn)
+        {
+            if (int.TryParse(csv[1], out int result))
+            {
+                if (result == 0)
+                {
+                    GameSystemManager.SetStatusLabel("Your Turn");
+                    GameSystemManager.isO = false;
+                    GameSystemManager.SetAllOtherButtonsEnabled();
+                }
+                else if(result == 1)
+                {
+                    GameSystemManager.SetStatusLabel("Your Turn");
+                    GameSystemManager.isO = true;
+                    GameSystemManager.SetAllOtherButtonsEnabled();
+                }
+                else if(result == -1)
+                {
+                    GameSystemManager.SetStatusLabel("Waiting for other player");
+                    GameSystemManager.SetPanelActive(true);
+                }
+            }
+        }
+        else if (signifier == ServerToClientSignifiers.winner)
+        {
+            if (int.TryParse(csv[1], out int result))
+            {
+                if (result == 0)
+                {
+                    GameSystemManager.SetStatusLabel("The winner is " + csv[2] + "!");
+                    GameSystemManager.SetAllEnabled(false);
+                }
+                else if (result == 1)
+                {
+                    GameSystemManager.SetStatusLabel("You Win!");
+                    GameSystemManager.SetAllEnabled(false);
+                }
+            }
         }
     }
 
@@ -127,6 +183,12 @@ public class NetworkedClient : MonoBehaviour
     }
 
 
+    public static void SendPlay(int index)
+    {
+        string message = ClientToServerSignifiers.sendPlay + "," + index;
+        SendMessageToHost(message);
+    }
+
 }
 
 public class PlayerAccount
@@ -135,19 +197,28 @@ public class PlayerAccount
 
     public PlayerAccount(string Name, string Password)
     {
+
         this.name = Name;
+
         this.password = Password;
+
     }
 }
+
 public static class ClientToServerSignifiers
 {
+
     public const int createAccount = 1;
 
     public const int login = 2;
+
+    public const int sendPlay = 3;
+
 }
 
 public static class ServerToClientSignifiers
 {
+
     public const int loginComplete = 1;
 
     public const int loginFailed = 2;
@@ -155,4 +226,12 @@ public static class ServerToClientSignifiers
     public const int accountCreationComplete = 3;
 
     public const int accountCreationFailed = 4;
+
+    public const int isSpectator = 5;
+
+    public const int waiting = 6;
+
+    public const int playTurn = 7;
+
+    public const int winner = 8;
 }

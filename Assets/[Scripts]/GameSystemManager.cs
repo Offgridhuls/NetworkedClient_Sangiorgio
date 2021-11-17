@@ -12,8 +12,18 @@ public class GameSystemManager : MonoBehaviour
 
     private GameObject networkedClient;
 
+    public GameObject gamePanel, accountPanel;
+
+    public static bool isO;
+
+    public static GameSystemManager instance;
+
+    public Text statusLabel;
+
+    public GameButton[] gameButtons;
     void Start()
     {
+        instance = this;
         GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
 
         foreach (GameObject go in allObjects)
@@ -38,6 +48,8 @@ public class GameSystemManager : MonoBehaviour
         loginToggle.GetComponent<Toggle>().onValueChanged.AddListener(LoginToggleChanged);
         createToggle.GetComponent<Toggle>().onValueChanged.AddListener(CreateToggleChanged);
 
+        loginToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(false);
+
     }
 
     // Update is called once per frame
@@ -57,10 +69,11 @@ public class GameSystemManager : MonoBehaviour
         else
             msg = ClientToServerSignifiers.login + "," + n + "," + p;
 
-        networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(msg);
+        NetworkedClient.SendMessageToHost(msg);
 
         //networkedClient.GetComponent<NetworkedClient>().SendMessage(msg);
     }
+
 
     public void LoginToggleChanged(bool newVal)
     {
@@ -71,4 +84,49 @@ public class GameSystemManager : MonoBehaviour
     {
         loginToggle.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
     }
+    
+    public static void SetTextOnButton(int index, string text)
+    {
+        instance.gameButtons[index].SetText(text);
+    }
+
+    public static void SetEnabled(int index, bool enable)
+    {
+        instance.gameButtons[index].EnableButton(enable);
+    }
+    
+    public static void SetAllEnabled(bool enabled)
+    {
+        for(int i = 0; i < instance.gameButtons.Length; i ++)
+        {
+            SetEnabled(i, enabled);
+        }
+    }
+
+    public static void SetStatusLabel(string text)
+    {
+        instance.statusLabel.text = text;
+    }
+
+    public static void SetPanelActive(bool enable)
+    {
+        instance.gamePanel.SetActive(enable);
+        instance.accountPanel.SetActive(!enable);
+    }
+
+    public static void SetAllOtherButtonsEnabled()
+    {
+        for(int i = 0; i < instance.gameButtons.Length; i++)
+        {
+            if(instance.gameButtons[i].buttonText.text != "")
+            {
+                SetEnabled(i, false);
+            }
+            else
+            {
+                SetEnabled(i, true);
+            }
+        }
+    }
+
 }
