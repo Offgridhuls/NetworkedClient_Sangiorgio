@@ -142,21 +142,61 @@ public class NetworkedClient : MonoBehaviour
             {
                 if (result == 0)
                 {
-                    GameSystemManager.SetStatusLabel("Your Turn");
-                    GameSystemManager.isO = false;
-                    GameSystemManager.SetAllOtherButtonsEnabled();
+                    if(csv.Length == 2)
+                    {
+                        GameSystemManager.SetStatusLabel("Your Turn");
+                        GameSystemManager.isO = false;
+                        GameSystemManager.SetAllOtherButtonsEnabled();
+                    }
+                    else if(csv.Length == 3)
+                    {
+                        if(int.TryParse(csv[2], out int index))
+                        {
+                            GameSystemManager.instance.gameButtons[index].SetText("X");
+                            GameSystemManager.isO = true;
+                            GameSystemManager.SetAllOtherButtonsEnabled();
+                        }
+
+                    }
+                    else if(csv.Length == 4)
+                    {
+                        if (int.TryParse(csv[2], out int index))
+                        {
+                            GameSystemManager.instance.gameButtons[index].SetText("X");
+                        }
+                    }
                 }
                 else if(result == 1)
                 {
-                    GameSystemManager.SetStatusLabel("Your Turn");
-                    GameSystemManager.isO = true;
-                    GameSystemManager.SetAllOtherButtonsEnabled();
+                    if (csv.Length == 2)
+                    {
+                        GameSystemManager.SetStatusLabel("Your Turn");
+                        GameSystemManager.isO = true;
+                        GameSystemManager.SetAllOtherButtonsEnabled();
+                    }
+                    else if (csv.Length == 3)
+                    {
+                        if (int.TryParse(csv[2], out int index))
+                        {
+                            GameSystemManager.instance.gameButtons[index].SetText("O");
+                            GameSystemManager.isO = false;
+                            GameSystemManager.SetAllOtherButtonsEnabled();
+                        }
+                    }
+                    else if (csv.Length == 4)
+                    {
+                        if (int.TryParse(csv[2], out int index))
+                        {
+                            GameSystemManager.instance.gameButtons[index].SetText("O");
+                        }
+                    }
                 }
                 else if(result == -1)
                 {
                     GameSystemManager.SetStatusLabel("Waiting for other player");
                     GameSystemManager.SetPanelActive(true);
                 }
+                
             }
         }
         else if (signifier == ServerToClientSignifiers.winner)
