@@ -12,7 +12,7 @@ public class GameSystemManager : MonoBehaviour
 
     private GameObject networkedClient;
 
-    public GameObject gamePanel, accountPanel;
+    public GameObject gamePanel, accountPanel, replayButton;
 
     public static bool isO;
 
@@ -21,6 +21,7 @@ public class GameSystemManager : MonoBehaviour
     public Text statusLabel;
 
     public GameButton[] gameButtons;
+
     void Start()
     {
         instance = this;
@@ -52,7 +53,6 @@ public class GameSystemManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -71,7 +71,7 @@ public class GameSystemManager : MonoBehaviour
 
         NetworkedClient.SendMessageToHost(msg);
 
-        //networkedClient.GetComponent<NetworkedClient>().SendMessage(msg);
+
     }
 
 
@@ -129,4 +129,8 @@ public class GameSystemManager : MonoBehaviour
         }
     }
 
+    public static void SetReplayButtonEnabled(bool enabled)
+    {
+        instance.replayButton.SetActive(enabled);
+    }
 }

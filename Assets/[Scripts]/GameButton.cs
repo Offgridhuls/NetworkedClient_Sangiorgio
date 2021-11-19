@@ -8,16 +8,18 @@ public class GameButton : MonoBehaviour
 {
     public Text buttonText;
     public Button btn;
-   
+
     public void SendPlay()
     {
       for (int i = 0; i < GameSystemManager.instance.gameButtons.Length; i++)
       {
+      
             if (GameSystemManager.instance.gameButtons[i] == this)
             {
+            
                 NetworkedClient.SendPlay(i);
                 GameSystemManager.instance.gameButtons[i].SetText(GameSystemManager.isO ? "O" : "X");
-                Debug.Log(GameSystemManager.instance.gameButtons[i].buttonText.text);
+                GameSystemManager.SetStatusLabel("Waiting For Other Player");
                 GameSystemManager.SetAllEnabled(false);
                 break;
             }

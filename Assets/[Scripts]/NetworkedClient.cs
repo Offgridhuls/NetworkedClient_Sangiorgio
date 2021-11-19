@@ -27,8 +27,6 @@ public class NetworkedClient : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if(Input.GetKeyDown(KeyCode.S))
-        //    SendMessageToHost("Hello from client");
 
         UpdateNetworkConnection();
     }
@@ -150,7 +148,8 @@ public class NetworkedClient : MonoBehaviour
                     }
                     else if(csv.Length == 3)
                     {
-                        if(int.TryParse(csv[2], out int index))
+                        GameSystemManager.SetStatusLabel("Your Turn");
+                        if (int.TryParse(csv[2], out int index))
                         {
                             GameSystemManager.instance.gameButtons[index].SetText("X");
                             GameSystemManager.isO = true;
@@ -160,6 +159,7 @@ public class NetworkedClient : MonoBehaviour
                     }
                     else if(csv.Length == 4)
                     {
+                        Debug.Log("Recieved X");
                         if (int.TryParse(csv[2], out int index))
                         {
                             GameSystemManager.instance.gameButtons[index].SetText("X");
@@ -176,6 +176,7 @@ public class NetworkedClient : MonoBehaviour
                     }
                     else if (csv.Length == 3)
                     {
+                        GameSystemManager.SetStatusLabel("Your Turn");
                         if (int.TryParse(csv[2], out int index))
                         {
                             GameSystemManager.instance.gameButtons[index].SetText("O");
@@ -196,7 +197,6 @@ public class NetworkedClient : MonoBehaviour
                     GameSystemManager.SetStatusLabel("Waiting for other player");
                     GameSystemManager.SetPanelActive(true);
                 }
-                
             }
         }
         else if (signifier == ServerToClientSignifiers.winner)
@@ -207,11 +207,13 @@ public class NetworkedClient : MonoBehaviour
                 {
                     GameSystemManager.SetStatusLabel("The winner is " + csv[2] + "!");
                     GameSystemManager.SetAllEnabled(false);
+                    GameSystemManager.SetReplayButtonEnabled(true);
                 }
                 else if (result == 1)
                 {
                     GameSystemManager.SetStatusLabel("You Win!");
                     GameSystemManager.SetAllEnabled(false);
+                    GameSystemManager.SetReplayButtonEnabled(true);
                 }
             }
         }
@@ -221,7 +223,6 @@ public class NetworkedClient : MonoBehaviour
     {
         return isConnected;
     }
-
 
     public static void SendPlay(int index)
     {
@@ -254,6 +255,8 @@ public static class ClientToServerSignifiers
 
     public const int sendPlay = 3;
 
+    public const int sendReplay = 4;
+
 }
 
 public static class ServerToClientSignifiers
@@ -274,4 +277,6 @@ public static class ServerToClientSignifiers
     public const int playTurn = 7;
 
     public const int winner = 8;
+
+
 }
